@@ -11,10 +11,8 @@ from __future__ import print_function
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.autograd import *
-import misc.utils as utils
-
+from functools import reduce
 
 class CaptionModel(nn.Module):
     def __init__(self):

@@ -114,7 +114,7 @@ parser.add_argument('--verbose_loss', type=int, default=0,
 opt = parser.parse_args()
 
 # Load infos
-with open(opt.infos_path) as f:
+with open(opt.infos_path, 'rb') as f:
     infos = cPickle.load(f)
 
 # override and collect parameters
@@ -174,7 +174,10 @@ loss, split_predictions, lang_stats = eval_utils.eval_split(model, crit, loader,
 
 print('loss: ', loss)
 if lang_stats:
-  print(lang_stats)
+    print(lang_stats)
+    for k,v in lang_stats.items():
+        print(f"{k}: {v * 100:.2f}")
+
 
 if opt.dump_json == 1:
     # dump the json

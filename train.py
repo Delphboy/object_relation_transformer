@@ -3,8 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 
 import numpy as np
 
@@ -94,6 +92,7 @@ def train(opt):
     if vars(opt).get('start_from', None) is not None and os.path.isfile(os.path.join(opt.start_from,"optimizer.pth")):
         optimizer.load_state_dict(torch.load(os.path.join(opt.start_from, 'optimizer.pth')))
 
+    sc_flag = False
     while True:
         if epoch_done:
             if not opt.noamopt and not opt.reduce_on_plateau:
@@ -131,10 +130,12 @@ def train(opt):
         tmp = [data['fc_feats'], data['att_feats'], data['labels'], data['masks'], data['att_masks']]
         tmp = [_ if _ is None else torch.from_numpy(_).cuda() for _ in tmp]
         fc_feats, att_feats, labels, masks, att_masks = tmp
+        boxes = None
         if opt.use_box:
             boxes = data['boxes'] if data['boxes'] is None else torch.from_numpy(data['boxes']).cuda()
 
         optimizer.zero_grad()
+        reward = 0
 
         if not sc_flag:
             if opt.use_box:

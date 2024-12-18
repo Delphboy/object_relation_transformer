@@ -167,10 +167,10 @@ class DataLoader(data.Dataset):
         data = {}
         if self.use_box:
             boxes_batch, fc_batch, att_batch, label_batch, gts, infos = \
-                zip(*sorted(zip(boxes_batch, fc_batch, att_batch, np.vsplit(label_batch, batch_size), gts, infos), key=lambda x: 0, reverse=True))
+                zip(*sorted(zip(boxes_batch, fc_batch, att_batch, np.vsplit(label_batch, batch_size), gts, infos), key=lambda _: 0, reverse=True))
         else:
             fc_batch, att_batch, label_batch, gts, infos = \
-                zip(*sorted(zip(fc_batch, att_batch, np.vsplit(label_batch, batch_size), gts, infos), key=lambda x: 0, reverse=True))
+                zip(*sorted(zip(fc_batch, att_batch, np.vsplit(label_batch, batch_size), gts, infos), key=lambda _: 0, reverse=True))
 
         data['fc_feats'] = np.stack(reduce(lambda x,y:x+y, [[_]*seq_per_img for _ in fc_batch]))
         # merge att_feats
@@ -211,7 +211,11 @@ class DataLoader(data.Dataset):
         """
         ix = index #self.split_ix[index]
         if self.use_att:
-            att_feat = np.load(os.path.join(self.input_att_dir, str(self.info['images'][ix]['id']) + '.npz'))['feat']
+            try:
+                att_feat = np.load(os.path.join(self.input_att_dir, str(self.info['images'][ix]['id']) + '.npz'))['feat']
+            except Exception as e:
+                print("DEBUG", os.path.join(self.input_att_dir, str(self.info['images'][ix]['id']) + '.npz'))
+                raise e
             # Reshape to K x C
             att_feat = att_feat.reshape(-1, att_feat.shape[-1])
             if self.norm_att_feat:
@@ -299,7 +303,7 @@ class BlobFetcher():
             self.reset()
 
         ix, wrapped = self._get_next_minibatch_inds()
-        tmp = self.split_loader.next()
+        tmp = next(self.split_loader)
         if wrapped:
             self.reset()
 
