@@ -45,7 +45,7 @@ def train(opt):
     histories = {}
     if opt.start_from is not None:
         # open old infos and check if models are compatible
-        with open(os.path.join(opt.start_from, 'infos_'+opt.id+'.pkl')) as f:
+        with open(os.path.join(opt.start_from, 'infos_'+opt.id+'.pkl'), 'rb') as f:
             infos = cPickle.load(f)
             saved_model_opt = infos['opt']
             need_be_same=["caption_model", "rnn_type", "rnn_size", "num_layers"]
@@ -53,7 +53,7 @@ def train(opt):
                 assert vars(saved_model_opt)[checkme] == vars(opt)[checkme], "Command line argument and saved model disagree on '%s' " % checkme
 
         if os.path.isfile(os.path.join(opt.start_from, 'histories_'+opt.id+'.pkl')):
-            with open(os.path.join(opt.start_from, 'histories_'+opt.id+'.pkl')) as f:
+            with open(os.path.join(opt.start_from, 'histories_'+opt.id+'.pkl'), 'rb') as f:
                 histories = cPickle.load(f)
 
     iteration = infos.get('iter', 0)
@@ -92,6 +92,7 @@ def train(opt):
     else:
         optimizer = utils.build_optimizer(model.parameters(), opt)
     # Load the optimizer
+    # TODO: Optimiser name should include opt.id
     if vars(opt).get('start_from', None) is not None and os.path.isfile(os.path.join(opt.start_from,"optimizer.pth")):
         optimizer.load_state_dict(torch.load(os.path.join(opt.start_from, 'optimizer.pth')))
 
@@ -226,9 +227,11 @@ def train(opt):
 
                 if not os.path.isdir(opt.checkpoint_path):
                     os.makedirs(opt.checkpoint_path)
+                # TODO: model save should include opt.id
                 checkpoint_path = os.path.join(opt.checkpoint_path, 'model.pth')
                 torch.save(model.state_dict(), checkpoint_path)
                 logging.info("model saved to {}".format(checkpoint_path))
+                # TODO: optimiser save should include opt.id
                 optimizer_path = os.path.join(opt.checkpoint_path, 'optimizer.pth')
                 torch.save(optimizer.state_dict(), optimizer_path)
 
