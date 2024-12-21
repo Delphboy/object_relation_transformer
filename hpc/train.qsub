@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l h_rt=240:00:00
+#$ -l h_rt=48:00:00
 #$ -l h_vmem=7.5G
 #$ -pe smp 12
 #$ -l gpu=1
@@ -23,11 +23,12 @@ module load java/1.8.0_382-openjdk
 source .venv/bin/activate
 
 # First time setup
-python3 scripts/prepro_bbox_relative_coords.py --input_json /data/EECS-YuanLab/COCO/dataset_coco.json --input_box_dir /data/EECS-YuanLab/COCO/butd_box --output_dir /data/EECS-YuanLab/COCO/cocobu_box_relative --image_root /data/PublicDatasets/Coco-2014/
+# python3 scripts/prepro_bbox_relative_coords.py --input_json /data/EECS-YuanLab/COCO/dataset_coco.json --input_box_dir /data/EECS-YuanLab/COCO/butd_box --output_dir /data/EECS-YuanLab/COCO/cocobu_box_relative --image_root /data/PublicDataSets/Coco-2014/
 
 
 
 model_name="relation_transformer_bu"
+checkpoint_location="/data/scratch/eey362/object_relation_transormer_checkpoints"
 
 python3 train.py --id $model_name \
 	--caption_model "relation_transformer" \
@@ -35,13 +36,13 @@ python3 train.py --id $model_name \
 	--input_fc_dir "/data/EECS-YuanLab/COCO/butd_fc" \
 	--input_att_dir "/data/EECS-YuanLab/COCO/butd_att" \
 	--input_box_dir "/data/EECS-YuanLab/COCO/butd_box" \
-	--input_rel_box_dir "data/cocobu_box_relative/" \
+	--input_rel_box_dir "/data/EECS-YuanLab/COCO/cocobu_box_relative/" \
 	--input_label_h5 "/data/EECS-YuanLab/COCO/cocotalk_label.h5" \
-	--checkpoint_path "/data/scratch/eey362/object_relation_transormer_checkpoints/" \
+	--checkpoint_path $checkpoint_location \
 	--noamopt \
 	--noamopt_warmup 10000 \
 	--label_smoothing 0.0 \
-	--batch_size 15 \
+	--batch_size 128 \
 	--learning_rate 5e-4 \
 	--num_layers 6 \
 	--input_encoding_size 512 \
@@ -55,7 +56,7 @@ python3 train.py --id $model_name \
 	--use_box 1
 
 # Prepare for SCST training
-# bash scripts/copy_model.sh $model_name "{$model_name}_rl"
+bash scripts/copy_model.sh "${checkpoint_location}${model_name}" "{$model_name}_rl"
 
 #SCST
 # python3 train.py --id "{$model_name}_rl" \
@@ -66,7 +67,7 @@ python3 train.py --id $model_name \
 # 	--input_box_dir "/data/EECS-YuanLab/COCO/butd_box" \
 # 	--input_rel_box_dir "data/cocobu_box_relative/" \
 # 	--input_label_h5 "/data/EECS-YuanLab/COCO/cocotalk_label.h5" \
-# 	--checkpoint_path "/data/scratch/eey362/object_relation_transormer_checkpoints/" \
+# 	--checkpoint_path $checkpoint_location \
 # 	--label_smoothing 0.0 \
 # 	--batch_size 10 \
 # 	--learning_rate 5e-4 \

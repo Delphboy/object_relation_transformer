@@ -29,7 +29,7 @@ python eval.py --dump_images 0 \
 	--num_images 5000 \
 	--model "/data/scratch/eey362/object_relation_transormer_checkpoints/model.pkl" \
 	--infos_path "/data/scratch/eey362/object_relation_transormer_checkpoints/infos_{$model_name}-best.pkl" \
-	--image_root "/data/PublicDatasets/Coco-2014/" \
+	--image_root "/data/PublicDataSets/Coco-2014/" \
 	--input_json "/data/EECS-YuanLab/COCO/cocotalk.json" \
 	--input_fc_dir "/data/EECS-YuanLab/COCO/butd_fc" \
 	--input_att_dir "/data/EECS-YuanLab/COCO/butd_att" \

@@ -17,10 +17,13 @@ import eval_utils
 import misc.utils as utils
 from misc.rewards import init_scorer, get_self_critical_reward
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 try:
     import tensorboardX as tb
 except ImportError:
-    print("tensorboardX is not installed")
+    logging.info("tensorboardX is not installed")
     tb = None
 
 def add_summary_value(writer, key, value, iteration):
@@ -122,7 +125,7 @@ def train(opt):
         start = time.time()
         # Load data from train split (0)
         data = loader.get_batch('train')
-        print('Read data:', time.time() - start)
+        logging.info(f'Read data: {time.time() - start}')
 
         torch.cuda.synchronize()
         start = time.time()
@@ -159,10 +162,10 @@ def train(opt):
         torch.cuda.synchronize()
         end = time.time()
         if not sc_flag:
-            print("iter {} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}" \
+            logging.info("iter {} (epoch {}), train_loss = {:.3f}, time/batch = {:.3f}" \
                 .format(iteration, epoch, train_loss, end - start))
         else:
-            print("iter {} (epoch {}), avg_reward = {:.3f}, time/batch = {:.3f}" \
+            logging.info("iter {} (epoch {}), avg_reward = {:.3f}, time/batch = {:.3f}" \
                 .format(iteration, epoch, np.mean(reward[:,0]), end - start))
 
         # Update the iteration and epoch
@@ -225,7 +228,7 @@ def train(opt):
                     os.makedirs(opt.checkpoint_path)
                 checkpoint_path = os.path.join(opt.checkpoint_path, 'model.pth')
                 torch.save(model.state_dict(), checkpoint_path)
-                print("model saved to {}".format(checkpoint_path))
+                logging.info("model saved to {}".format(checkpoint_path))
                 optimizer_path = os.path.join(opt.checkpoint_path, 'optimizer.pth')
                 torch.save(optimizer.state_dict(), optimizer_path)
 
@@ -250,7 +253,7 @@ def train(opt):
                 if best_flag:
                     checkpoint_path = os.path.join(opt.checkpoint_path, 'model-best.pth')
                     torch.save(model.state_dict(), checkpoint_path)
-                    print("model saved to {}".format(checkpoint_path))
+                    logging.info("model saved to {}".format(checkpoint_path))
                     with open(os.path.join(opt.checkpoint_path, 'infos_'+opt.id+'-best.pkl'), 'wb') as f:
                         cPickle.dump(infos, f)
 
