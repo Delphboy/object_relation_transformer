@@ -15,6 +15,7 @@ from .OldModel import ShowAttendTellModel, AllImgModel
 from .AttModel import *
 from .TransformerModel import TransformerModel
 from .RelationTransformerModel import RelationTransformerModel
+from .SimpleTransformerModel import SimpleTransformerModel
 
 def setup(opt):
 
@@ -50,6 +51,8 @@ def setup(opt):
         model = TransformerModel(opt)
     elif opt.caption_model == 'relation_transformer':
         model = RelationTransformerModel(opt)
+    elif opt.caption_model == 'simple_transformer':
+        model = SimpleTransformerModel(opt)
     else:
         raise Exception("Caption model not supported: {}".format(opt.caption_model))
 
