@@ -34,6 +34,20 @@ def train(opt):
     # Deal with feature things before anything
     opt.use_att = utils.if_use_att(opt.caption_model)
 
+    # Set random seed
+    if opt.seed != -1:
+        seed = opt.seed
+        np.random.seed(seed)
+        random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+        # This is makes things deterministic
+        torch.use_deterministic_algorithms(True, warn_only=True)
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+
     loader = DataLoader(opt)
 
     opt.vocab_size = loader.vocab_size

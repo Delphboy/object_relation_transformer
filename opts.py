@@ -3,6 +3,10 @@ import argparse
 def parse_opt():
     parser = argparse.ArgumentParser()
 
+    # Fixed seed
+    parser.add_argument('--seed', type=int, default=-1,
+                    help='Whether to use a fixed seed. Set to -1 for no seed')
+
     # Data input settings
     parser.add_argument('--input_json', type=str, default='/data/captioning_data/dataset_coco.json',
                     help='path to the json file containing additional info and vocab')
