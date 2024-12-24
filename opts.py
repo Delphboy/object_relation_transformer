@@ -164,7 +164,7 @@ def parse_opt():
     args.BEST_MODEL_FILE_NAME = f"model-{args.id}-best.pth"
     args.HISTORIES_FILE_NAME = f"histories_{args.id}.pkl"
     args.INFOS_FILE_NAME = f"infos_{args.id}.pkl"
-    args.BEST_INFOS_FILE_NAME = f"infos_{args.id}_best.pkl"
+    args.BEST_INFOS_FILE_NAME = f"infos_{args.id}-best.pkl"
 
     # Check if args are valid
     assert args.rnn_size > 0, "rnn_size should be greater than 0"
